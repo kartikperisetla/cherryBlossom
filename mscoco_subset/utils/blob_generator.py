@@ -21,6 +21,9 @@ class GeoEnodingHelper:
         return dd
 
     def get_address(self, lat, lon):
+        if len(lat.strip())==0 or len(lon.strip())==0:
+            return ""
+
         lat = str(lat).split(",")[:2]
         lat = ",".join(lat)[1:]
 
@@ -55,9 +58,18 @@ class BlobGenerator:
             encoded_string = base64.b64encode(image_file.read())
             return encoded_string.decode("utf-8") 
 
-    def _create_blob(self, base64img, caption, annotationlist, op_filename, location, datetime, device):
+    def _get_filename_from_path(self, path):
+        if "/" in path:
+            return path.split("/")[-1]
+        else:
+            return path
+
+    def _create_blob(self, fname, base64img, caption, annotationlist, op_filename, location, datetime, device):
+        fname = self._get_filename_from_path(fname)
+        
         # this is schema for blob storage for azure search index
         _json = {"id" : str(uuid.uuid4()),
+                 "filename" : fname,
                  "datetime" : datetime,
                  "annotationlist" : annotationlist,
                  "location" : location,
@@ -81,15 +93,15 @@ class BlobGenerator:
     def _get_consumable_img_tags(self, tag_dict):
         result_dict = {"location":"", "datetime":"", "device":""}
         # get address using lat-lon
-        lat = tag_dict["GPS GPSLatitude"]
-        lon = tag_dict["GPS GPSLongitude"]
+        lat = tag_dict["GPS GPSLatitude"] if "GPS GPSLatitude" in tag_dict else ""
+        lon = tag_dict["GPS GPSLongitude"] if "GPS GPSLongitude" in tag_dict else ""
 
         result_dict["location"] = self.g.get_address(lat, lon)
 
         # get device info
-        result_dict["device"] = str(tag_dict["Image Model"])
+        result_dict["device"] = str(tag_dict["Image Model"]) if "Image Model" in tag_dict else ""
         # convert into month-name, year
-        result_dict["datetime"] = str(tag_dict["EXIF DateTimeOriginal"])
+        result_dict["datetime"] = str(tag_dict["EXIF DateTimeOriginal"]) if "EXIF DateTimeOriginal" in tag_dict else ""
 
         return result_dict
 
@@ -115,15 +127,18 @@ class BlobGenerator:
             base64_img = self._get_image_base64(fname)
 
             op_filename = output_dir + "/op" + str(cnt) + ".json"
-            self._create_blob(base64_img, caption, "", op_filename, img_tags["location"], img_tags["datetime"], img_tags["device"])
+            self._create_blob(fname, base64_img, caption, "", op_filename, img_tags["location"], img_tags["datetime"], img_tags["device"])
             cnt+= 1
         print("Completely processed " + path)
 
 if __name__ == "__main__":
     path = "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/mscoco_subset_gen_captions.tsv"
-    
+    output_dir = "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/blob_files"
+
+    # /Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/sampled_images/
+
     b = BlobGenerator()
-    b.process(path, "blob_files")
+    b.process(path, output_dir)
 
 
     # using Reverse geo encoding using geo-encoder
