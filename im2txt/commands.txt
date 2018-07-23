@@ -1,0 +1,12 @@
+
+CHECKPOINT_PATH="/Users/kartik/im2txt_2/im2txt_2016_10_11.2000000/model.ckpt-2000000_renamed"
+
+IMAGE_FILE="${HOME}/im2txt/*.jpg"
+
+VOCAB_FILE="${HOME}/im2txt_2/word_counts.txt"
+
+bazel-bin/im2txt/run_inference \
+  --checkpoint_path=${CHECKPOINT_PATH} \
+  --vocab_file=${VOCAB_FILE} \
+  --input_files=${IMAGE_FILE}
+

@@ -1,0 +1,84 @@
+➜  im2txt git:(master) ✗ CHECKPOINT_PATH="${HOME}/im2txt_2/im2txt_2016_10_11.2000000/model.ckpt-2000000"
+➜  im2txt git:(master) ✗ IMAGE_FILE="${HOME}/im2txt/img.jpg"
+➜  im2txt git:(master) ✗ VOCAB_FILE="${HOME}/im2txt_2/word_counts.txt"
+➜  im2txt git:(master) ✗
+➜  im2txt git:(master) ✗ ls $HOME/im2txt_2/im2txt_2016_10_11.2000000/model.ckpt-2000000
+/Users/kartik/im2txt_2/im2txt_2016_10_11.2000000/model.ckpt-2000000
+➜  im2txt git:(master) ✗ pwd
+/Users/kartik/pycook/tensorflow_models/models/research/im2txt
+➜  im2txt git:(master) ✗ bazel build -c opt //im2txt:run_inference
+INFO: Build options have changed, discarding analysis cache.
+INFO: Analysed target //im2txt:run_inference (2 packages loaded).
+INFO: Found 1 target...
+Target //im2txt:run_inference up-to-date:
+  bazel-bin/im2txt/run_inference
+INFO: Elapsed time: 0.506s, Critical Path: 0.01s
+INFO: 0 processes.
+INFO: Build completed successfully, 1 total action
+➜  im2txt git:(master) ✗ bazel-bin/im2txt/run_inference \
+  --checkpoint_path=${CHECKPOINT_PATH} \
+  --vocab_file=${VOCAB_FILE} \
+  --input_files=${IMAGE_FILE}
+INFO:tensorflow:Building model.
+INFO:tensorflow:Initializing vocabulary from file: /Users/kartik/im2txt_2/word_counts.txt
+INFO:tensorflow:Created vocabulary with 11520 words
+INFO:tensorflow:Running caption generation on 1 files matching /Users/kartik/im2txt/img.jpg
+2018-07-16 00:22:33.568313: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+INFO:tensorflow:Loading model from checkpoint: /Users/kartik/im2txt_2/im2txt_2016_10_11.2000000/model.ckpt-2000000
+INFO:tensorflow:Restoring parameters from /Users/kartik/im2txt_2/im2txt_2016_10_11.2000000/model.ckpt-2000000
+Traceback (most recent call last):
+  File "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/bazel-bin/im2txt/run_inference.runfiles/im2txt/im2txt/run_inference.py", line 85, in <module>
+    tf.app.run()
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/platform/app.py", line 125, in run
+    _sys.exit(main(argv))
+  File "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/bazel-bin/im2txt/run_inference.runfiles/im2txt/im2txt/run_inference.py", line 65, in main
+    restore_fn(sess)
+  File "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/bazel-bin/im2txt/run_inference.runfiles/im2txt/im2txt/inference_utils/inference_wrapper_base.py", line 96, in _restore_fn
+    saver.restore(sess, checkpoint_path)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 1768, in restore
+    six.reraise(exception_type, exception_value, exception_traceback)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 1752, in restore
+    {self.saver_def.filename_tensor_name: save_path})
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 900, in run
+    run_metadata_ptr)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 1135, in _run
+    feed_dict_tensor, options, run_metadata)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 1316, in _do_run
+    run_metadata)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 1335, in _do_call
+    raise type(e)(node_def, op, message)
+tensorflow.python.framework.errors_impl.NotFoundError: Tensor name "lstm/basic_lstm_cell/bias" not found in checkpoint files /Users/kartik/im2txt_2/im2txt_2016_10_11.2000000/model.ckpt-2000000
+	 [[Node: save/RestoreV2 = RestoreV2[dtypes=[DT_FLOAT, DT_FLOAT, DT_FLOAT, DT_FLOAT, DT_FLOAT, ..., DT_FLOAT, DT_FLOAT, DT_FLOAT, DT_FLOAT, DT_FLOAT], _device="/job:localhost/replica:0/task:0/device:CPU:0"](_arg_save/Const_0_0, save/RestoreV2/tensor_names, save/RestoreV2/shape_and_slices)]]
+
+Caused by op u'save/RestoreV2', defined at:
+  File "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/bazel-bin/im2txt/run_inference.runfiles/im2txt/im2txt/run_inference.py", line 85, in <module>
+    tf.app.run()
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/platform/app.py", line 125, in run
+    _sys.exit(main(argv))
+  File "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/bazel-bin/im2txt/run_inference.runfiles/im2txt/im2txt/run_inference.py", line 51, in main
+    FLAGS.checkpoint_path)
+  File "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/bazel-bin/im2txt/run_inference.runfiles/im2txt/im2txt/inference_utils/inference_wrapper_base.py", line 116, in build_graph_from_config
+    saver = tf.train.Saver()
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 1284, in __init__
+    self.build()
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 1296, in build
+    self._build(self._filename, build_save=True, build_restore=True)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 1333, in _build
+    build_save=build_save, build_restore=build_restore)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 781, in _build_internal
+    restore_sequentially, reshape)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 400, in _AddRestoreOps
+    restore_sequentially)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 832, in bulk_restore
+    return io_ops.restore_v2(filename_tensor, names, slices, dtypes)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/ops/gen_io_ops.py", line 1463, in restore_v2
+    shape_and_slices=shape_and_slices, dtypes=dtypes, name=name)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/framework/op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 3414, in create_op
+    op_def=op_def)
+  File "/usr/local/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 1740, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+NotFoundError (see above for traceback): Tensor name "lstm/basic_lstm_cell/bias" not found in checkpoint files /Users/kartik/im2txt_2/im2txt_2016_10_11.2000000/model.ckpt-2000000
+	 [[Node: save/RestoreV2 = RestoreV2[dtypes=[DT_FLOAT, DT_FLOAT, DT_FLOAT, DT_FLOAT, DT_FLOAT, ..., DT_FLOAT, DT_FLOAT, DT_FLOAT, DT_FLOAT, DT_FLOAT], _device="/job:localhost/replica:0/task:0/device:CPU:0"](_arg_save/Const_0_0, save/RestoreV2/tensor_names, save/RestoreV2/shape_and_slices)]]
