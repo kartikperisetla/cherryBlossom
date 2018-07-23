@@ -88,7 +88,7 @@ def main(_):
     # Prepare the caption generator. Here we are implicitly using the default
     # beam search parameters. See caption_generator.py for a description of the
     # available beam search parameters.
-    generator = caption_generator.CaptionGenerator(model, vocab, beam_size=100, max_caption_length=25)
+    generator = caption_generator.CaptionGenerator(model, vocab, beam_size=20, max_caption_length=20)
 
     # save captions file
     fop = open(FLAGS.output_caption_file, "w", encoding="utf-8")
@@ -110,8 +110,8 @@ def main(_):
         buff += sentence +"["+ str(math.exp(caption.logprob)) + "]|"
         cnt += 1
 
-        if cnt % 100 is 1:
-          print("Captioned " + str(cnt) + " files.")
+    if cnt % 100 is 1:
+      print("Captioned " + str(cnt) + " files.")
 
       fop.write(buff+"\n")
     print("Completed captioning " + str(cnt) + " files.")
