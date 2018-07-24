@@ -1,6 +1,7 @@
 import csv
 from flask import Flask, render_template, request, redirect, url_for
 import requests
+import simplejson
 from pager import Pager
 
 
@@ -41,14 +42,20 @@ def image_view(ind=None):
             index=ind,
             pager=pager,
             data=table[ind],
-            searchQueryString="NA")
+            searchQueryString="N/A")
 
 
 @app.route('/goto', methods=['POST', 'GET'])
 def goto():
     data = request.form.get('searchQuery')
     print (data)
-    #return redirect('/' + request.form['searchQuery'])
+    reqUrl = "https://pensieve3.search.windows.net/indexes/goblins/docs?api-version=2017-11-11&search=" + data
+    headers = {
+        'api-key': 'B91A6F1F83847E85E94C2F87488DC059'
+    }
+    req = requests.get(reqUrl, headers=headers)
+    jsonObj = simplejson.loads(req.content)
+    print (jsonObj)
     ind = 3;
     pager.current = ind
     return render_template(
