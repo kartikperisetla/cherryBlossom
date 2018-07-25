@@ -1,4 +1,5 @@
 import csv
+import shutil, os
 from flask import Flask, render_template, request, redirect, url_for
 import requests, simplejson, json, base64
 from pager import Pager
@@ -60,29 +61,24 @@ def goto():
 
     print("Query String:", data)
     print("Number of images returned:", len(imagesListFromJson))
-
+    if (len(imagesListFromJson) > 0):
+        for fileName in os.listdir('images'):
+            os.remove(os.getcwd() + "\\images\\" +fileName)
     imageDict = {}
     for i in range(len(imagesListFromJson)):
         imageDict[str(i)] = imagesListFromJson[i]['image']
+        imgdata = base64.b64decode(imagesListFromJson[i]['image'])
+        filename = "images/" + imagesListFromJson[i]['filename']
+        with open(filename, 'wb') as f:
+            f.write(imgdata)
 
-    # with open('zzzz.txt', 'w') as outfile:
-        # json.dump(imagesListFromJson, outfile)
-
-    # imgdata = base64.b64decode(imagesListFromJson[0]['image'])
-    # filename = 'some_image.jpg'
-    # with open(filename, 'wb') as f:
-        # f.write(imgdata)
-
-    # ind = 3
-    # pager.current = ind
-    # return render_template(
-        # 'imageview.html',
-        # index=ind,
-        # pager=pager,
-        # data=img_data,
-        # searchQueryString=data)
-
-    return json.dumps(imageDict)
+    pager.current = 3
+    return render_template(
+        'imageview.html',
+        index=3,
+        pager=pager,
+        data=json.dumps(imageDict),
+        searchQueryString=data)
 
 
 if __name__ == '__main__':
