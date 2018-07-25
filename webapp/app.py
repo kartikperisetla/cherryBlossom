@@ -62,16 +62,16 @@ def goto():
 
     print("Query String:", data)
     print("Number of images returned:", len(imagesListFromJson))
-    if (len(imagesListFromJson) > 0):
-        for fileName in os.listdir('images'):
-            os.remove(os.getcwd() + "\\images\\" +fileName)
+    # if (len(imagesListFromJson) > 0):
+        # for fileName in os.listdir('images'):
+            # os.remove(os.getcwd() + "\\images\\" +fileName)
     imageDict = {}
     for i in range(len(imagesListFromJson)):
         imageDict[str(i)] = imagesListFromJson[i]['image']
-        imgdata = base64.b64decode(imagesListFromJson[i]['image'])
-        filename = "images/" + imagesListFromJson[i]['filename']
-        with open(filename, 'wb') as f:
-            f.write(imgdata)
+        # imgdata = base64.b64decode(imagesListFromJson[i]['image'])
+        # filename = "images/" + imagesListFromJson[i]['filename']
+        # with open(filename, 'wb') as f:
+            # f.write(imgdata)
 
     pager.current = 3
     return json.dumps(imageDict)
