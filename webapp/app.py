@@ -1,7 +1,6 @@
 import csv
 from flask import Flask, render_template, request, redirect, url_for
-import requests
-import simplejson
+import requests, simplejson, json, base64
 from pager import Pager
 
 
@@ -47,23 +46,43 @@ def image_view(ind=None):
 
 @app.route('/goto', methods=['POST', 'GET'])
 def goto():
-    data = request.form.get('searchQuery')
-    print (data)
-    reqUrl = "https://pensieve3.search.windows.net/indexes/goblins/docs?api-version=2017-11-11&search=" + data
+    if request.method == 'POST':
+        data = request.form['queryStr']
+    if request.method == 'GET':
+        data = request.args.get('queryStr')
+    reqUrl = "https://pensieve3.search.windows.net/indexes/gringottsv2/docs?api-version=2017-11-11&search=" + data
     headers = {
         'api-key': 'B91A6F1F83847E85E94C2F87488DC059'
     }
     req = requests.get(reqUrl, headers=headers)
     jsonObj = simplejson.loads(req.content)
-    print (jsonObj)
-    ind = 3;
-    pager.current = ind
-    return render_template(
-        'imageview.html',
-        index=ind,
-        pager=pager,
-        data=table[ind],
-        searchQueryString=data)
+    imagesListFromJson = jsonObj['value']
+
+    print("Query String:", data)
+    print("Number of images returned:", len(imagesListFromJson))
+
+    imageDict = {}
+    for i in range(len(imagesListFromJson)):
+        imageDict[str(i)] = imagesListFromJson[i]['image']
+
+    # with open('zzzz.txt', 'w') as outfile:
+        # json.dump(imagesListFromJson, outfile)
+
+    # imgdata = base64.b64decode(imagesListFromJson[0]['image'])
+    # filename = 'some_image.jpg'
+    # with open(filename, 'wb') as f:
+        # f.write(imgdata)
+
+    # ind = 3
+    # pager.current = ind
+    # return render_template(
+        # 'imageview.html',
+        # index=ind,
+        # pager=pager,
+        # data=img_data,
+        # searchQueryString=data)
+
+    return json.dumps(imageDict)
 
 
 if __name__ == '__main__':

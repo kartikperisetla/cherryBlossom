@@ -19,17 +19,17 @@
   </nav>
 
   <div class="row">
-    <form class="navbar-form navbar-left" role="search" name="goto" action="/goto" method="POST">
+    <form id="searchForm" class="navbar-form navbar-left" name="searchForm">
       <div class="form-group">
-        <input type="text" name="searchQuery" class="form-control" placeholder="What do you want to see?">
+        <input id="searchTextBox" type="text" name="searchTextBox" class="form-control" placeholder="What do you want to see?">
       </div>
-      <button type="Go" class="btn btn-default">Go</button>
+      <a href=# id="goButton"><button class='btn btn-default'>Submit</button></a>
     </form>
   </div>
 
   <div class="row" >
       <div>
-        <p style="margin-left:40px;"><strong>Query String:</strong> {{searchQueryString}}</p>
+        <p style="margin-left:40px;" id="queryStringDisplay"><strong>Query String:</strong> {{searchQueryString}}</p>
       </div>
   </div>
 
@@ -45,4 +45,29 @@
 
 </div>
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+var imgData = null;
+
+$(function(){
+    $('#goButton').on('click', function(){
+        console.log($('#searchTextBox').val());
+        document.getElementById("queryStringDisplay").innerHTML = "<p style=\"margin-left:40px;\" id=\"queryStringDisplay\">Sending Req...</p>";
+        $.ajax({
+            url: '/goto',
+            type: 'POST',
+            data: {queryStr:$('#searchTextBox').val()},
+            success: function(data) {
+                console.log(data);
+                $('#queryStringDisplay').html( JSON.stringify( data ) );
+                $('#queryStringDisplay').html("<p style=\"margin-left:40px;\" id=\"queryStringDisplay\">SUCCESS</p>");
+
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
