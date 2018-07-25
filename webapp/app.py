@@ -67,13 +67,12 @@ def goto():
             # os.remove(os.getcwd() + "\\images\\" +fileName)
     imageDict = {}
     for i in range(len(imagesListFromJson)):
-        imageDict[str(i)] = imagesListFromJson[i]['image']
+        imageDict[str(i)] = { 'image' : imagesListFromJson[i]['image'], 'caption': imagesListFromJson[i]['caption']}
         # imgdata = base64.b64decode(imagesListFromJson[i]['image'])
         # filename = "images/" + imagesListFromJson[i]['filename']
         # with open(filename, 'wb') as f:
             # f.write(imgdata)
 
-    pager.current = 3
     return json.dumps(imageDict)
 
 if __name__ == '__main__':

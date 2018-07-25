@@ -94,10 +94,12 @@
                 success: function(data) {
                     var imgJson = jQuery.parseJSON(data);
                     //console.log(imgJson["0"]);
-
+                    $( "#resultImgDisplay" ).empty();
                     for (var key in imgJson){
+                        var captionStr = imgJson[key]['caption'];
+                        captionStr = captionStr.substring(0, captionStr.indexOf("["));
                         var newImg = 
-    "<div class=\"card mb-4 box-shadow\"><img class=\"card-img-top\" alt=\"Thumbnail [100%x225]\" style=\"height: 225px; width: 100%; display:block;\"src=\"data:image/png;base64, " + imgJson[key] + " \" data-holder-rendered=\"true\"><div class=\"card-body\"><p class=\"card-text\">Image " + key+1 + " returned from server</p><div class=\"d-flex justify-content-between align-items-center\"></div></div></div></div>";
+    "<div class=\"card mb-4 box-shadow\"><img class=\"card-img-top\" alt=\"Thumbnail [100%x225]\" style=\"height: 225px; width: 70%; display:block;\"src=\"data:image/png;base64, " + imgJson[key]['image'] + " \" data-holder-rendered=\"true\"><div class=\"card-body\"><p class=\"card-text\">Caption: " + captionStr + "</p><div class=\"d-flex justify-content-between align-items-center\"></div></div></div></div>";
                         $( "#resultImgDisplay" ).append( newImg );
                     }
                 },
