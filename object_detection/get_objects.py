@@ -10,7 +10,7 @@ from collections import defaultdict
 from io import StringIO
 #from matplotlib import pyplot as plt
 from PIL import Image
-import DetectedObjects
+from detected_object import *
 import sys
 import _pickle
 
@@ -214,7 +214,11 @@ def main(args):
                         row = np.hstack((category_index[output_dict['detection_classes'][i]]['name'],
                                         output_dict['detection_boxes'][i],
                                         output_dict['detection_scores'][i]))
-                        detected_images.append(row)
+                        detected_object = DetectedObject(category_index[output_dict['detection_classes'][i]]['name'],
+                                        output_dict['detection_boxes'][i][0],output_dict['detection_boxes'][i][1],
+                                        output_dict['detection_boxes'][i][2],output_dict['detection_boxes'][i][3],
+                                        output_dict['detection_scores'][i])
+                        detected_images.append(detected_object)
                 filename = os.path.join(args.PATH_TO_OUT_DIR, os.path.basename(image_path))
                 newname = filename.replace('.jpg', '.pkl')
                 out_file = open(newname, 'wb')
