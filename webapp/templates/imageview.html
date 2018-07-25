@@ -52,16 +52,12 @@ var imgData = null;
 $(function(){
     $('#goButton').on('click', function(){
         console.log($('#searchTextBox').val());
-        document.getElementById("queryStringDisplay").innerHTML = "<p style=\"margin-left:40px;\" id=\"queryStringDisplay\">Sending Req...</p>";
         $.ajax({
             url: '/goto',
             type: 'POST',
             data: {queryStr:$('#searchTextBox').val()},
             success: function(data) {
                 console.log(data);
-                $('#queryStringDisplay').html( JSON.stringify( data ) );
-                $('#queryStringDisplay').html("<p style=\"margin-left:40px;\" id=\"queryStringDisplay\">SUCCESS</p>");
-
             },
             error: function(error) {
                 console.log(error);

@@ -28,7 +28,8 @@ app.config.update(
 
 @app.route('/')
 def index():
-    return redirect('/0')
+    #return redirect('/0')
+    return render_template("index.html")
 
 
 @app.route('/<int:ind>/')
@@ -73,13 +74,7 @@ def goto():
             f.write(imgdata)
 
     pager.current = 3
-    return render_template(
-        'imageview.html',
-        index=3,
-        pager=pager,
-        data=json.dumps(imageDict),
-        searchQueryString=data)
-
+    return json.dumps(imageDict)
 
 if __name__ == '__main__':
     app.run(debug=True)
