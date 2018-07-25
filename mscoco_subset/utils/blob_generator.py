@@ -10,6 +10,8 @@ import certifi
 import json
 import ast
 
+from detected_object_unpacker import *
+
 # Helper class for geo-encoding and reverse geo-encoding 
 class GeoEnodingHelper:
     def __init__(self):
@@ -51,6 +53,7 @@ class GeoEnodingHelper:
 class BlobGenerator:
     def __init__(self):
         self.g = GeoEnodingHelper()
+        self.unpacker = DetectedObjectUnpacker()
         self.date = datetime.datetime.now().strftime("%Y%m%d")
 
     def _get_image_base64(self, img_path):
@@ -64,18 +67,25 @@ class BlobGenerator:
         else:
             return path
 
-    def _create_blob(self, fname, base64img, caption, annotationlist, op_filename, location, datetime, device):
+    def _create_blob(self, fname, pickle_dir, base64img, caption, annotationlist, op_filename, location, datetime, device):
         fname = self._get_filename_from_path(fname)
+
+        entity_names, entity_spatial_metadata = self._get_entities(fname, pickle_dir)
         
         # this is schema for blob storage for azure search index
-        _json = {"id" : str(uuid.uuid4()),
-                 "filename" : fname,
-                 "datetime" : datetime,
-                 "annotationlist" : annotationlist,
-                 "location" : location,
-                 "device" : device,
-                 "caption" : caption,
-                 "image" : base64img
+        _json = {
+                    "id" : str(uuid.uuid4()),
+                    "filename" : fname,
+                    "datetime" : datetime,
+                    "entityList" : entity_names,
+                    "entitySpatialMeta" : entity_spatial_metadata,
+                    "entityPropMeta" : "",
+                    "spatialRelationList" : "",
+                    "semanticRelationList" : "",
+                    "location" : location,
+                    "device" : device,
+                    "caption" : caption,
+                    "image" : base64img
                 }
         
         with open(op_filename, "w") as fp:
@@ -95,17 +105,21 @@ class BlobGenerator:
         # get address using lat-lon
         lat = tag_dict["GPS GPSLatitude"] if "GPS GPSLatitude" in tag_dict else ""
         lon = tag_dict["GPS GPSLongitude"] if "GPS GPSLongitude" in tag_dict else ""
-
         result_dict["location"] = self.g.get_address(lat, lon)
-
         # get device info
         result_dict["device"] = str(tag_dict["Image Model"]) if "Image Model" in tag_dict else ""
         # convert into month-name, year
         result_dict["datetime"] = str(tag_dict["EXIF DateTimeOriginal"]) if "EXIF DateTimeOriginal" in tag_dict else ""
-
         return result_dict
+    
+    # method to get entity names and metadata for input image file name
+    def _get_entities(self, fname, pickle_dir):
+        _actual_filename = self._get_filename_from_path(fname)
+        _actual_filename = pickle_dir + "/" + _actual_filename.split(".")[0:1] + ".pkl"
+        _, entity_names, entity_metadata = self.unpacker.unpack(_actual_filename)
+        return entity_names, entity_metadata
 
-    def process(self, path, output_dir):
+    def process(self, path, pickle_dir, output_dir):
         if not os.path.exists(path):
             print("path :'"+ path + "' doesn't exists.")
             return
@@ -126,19 +140,25 @@ class BlobGenerator:
             img_tags = self._get_consumable_img_tags(self._get_image_tags(fname, img_tag_keys))
             base64_img = self._get_image_base64(fname)
 
-            op_filename = output_dir + "/op" + str(cnt) + ".json"
-            self._create_blob(fname, base64_img, caption, "", op_filename, img_tags["location"], img_tags["datetime"], img_tags["device"])
+            _actual_filename = self._get_filename_from_path(fname)
+            _actual_filename = _actual_filename.split(".")[0:1]
+
+            op_filename = output_dir + "/" + _actual_filename + ".json"
+
+            self._create_blob(fname, pickle_dir,  base64_img, caption, "", op_filename, img_tags["location"], img_tags["datetime"], img_tags["device"])
             cnt+= 1
         print("Completely processed " + path)
 
 if __name__ == "__main__":
     path = "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/mscoco_subset_gen_captions.tsv"
+    pickle_dir = "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/pickle_files"
     output_dir = "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/blob_files"
+
 
     # /Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/sampled_images/
 
     b = BlobGenerator()
-    b.process(path, output_dir)
+    b.process(path, pickle_dir, output_dir)
 
 
     # using Reverse geo encoding using geo-encoder
