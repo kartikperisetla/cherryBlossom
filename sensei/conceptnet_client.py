@@ -67,16 +67,6 @@ class Relation:
 class ConceptnetClient:
     def __init__(self):
         self.endpoint = "http://api.conceptnet.io/c/en/"
-
-    def _parse_json(self, response):
-        raw = json.loads(response)
-
-        # parse edges
-        # if EDGES in raw:
-        #     edges = raw[EDGES]
-
-        #     for edge in edges:
-                # WIP - Kartik working on creating in graph structure for consumption
                 
     # filters - dictionary of parameters {relationship_name: ( isSource = True, weight_threshold = 5, max_items = math.Inf) }
     def filter_concepts(self, name, edges, filters, end_sense_label = None):
