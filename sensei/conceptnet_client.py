@@ -21,6 +21,7 @@ class Relationship(Enum):
     MotivatedByGoal = 'MotivatedByGoal'
     ReceivesAction = 'ReceivesAction'
     CapableOf = 'CapableOf'
+    FormOf = 'FormOf'
 
 class Edge:
     def __init__(self):
@@ -78,7 +79,7 @@ class ConceptnetClient:
                 # WIP - Kartik working on creating in graph structure for consumption
                 
     # filters - dictionary of parameters {relationship_name: ( isSource = True, weight_threshold = 5, max_items = math.Inf) }
-    def filter_concepts(self, name, edges, filters):
+    def filter_concepts(self, name, edges, filters, end_sense_label = None):
         items_per_relation = defaultdict(int)
         concepts_per_relation = defaultdict(list)
 
@@ -94,13 +95,16 @@ class ConceptnetClient:
                         (not is_source and edge['end']['label'].lower() == name) ) and
                         (edge['weight'] >= config[is_source].weight_threshold) and 
                         (items_per_relation.get( (edge_relationship, is_source), 0) < config[is_source].max_items)):
-                    
-                        items_per_relation[(edge_relationship, is_source)] += 1
 
-                        if is_source:
-                            concepts_per_relation[(edge_relationship, is_source)].append((edge['end']['label'].lower(), edge['weight']))
-                        else:
-                            concepts_per_relation[(edge_relationship, is_source)].append((edge['start']['label'].lower(), edge['weight']))
+                        if ((end_sense_label is None) or
+                           (end_sense_label is not None and edge['end'].get('sense_label',None) == end_sense_label)):
+
+                            items_per_relation[(edge_relationship, is_source)] += 1
+
+                            if is_source:
+                                concepts_per_relation[(edge_relationship, is_source)].append((edge['end']['label'].lower(), edge['weight']))
+                            else:
+                                concepts_per_relation[(edge_relationship, is_source)].append((edge['start']['label'].lower(), edge['weight']))
 
         return concepts_per_relation
 
@@ -118,7 +122,7 @@ class ConceptnetClient:
 
         return formatted_filters
 
-    def get_concept(self, name, filters):
+    def get_concept(self, name, filters, end_sense_label = None):
 
         name = name.lower()
         _url = self.endpoint + re.sub(' +','_', name)
@@ -128,12 +132,12 @@ class ConceptnetClient:
             return None
 
         formatted_filters = self.format_filters(filters)
-        filtered_concepts = self.filter_concepts(name, contents['edges'], formatted_filters)
+        filtered_concepts = self.filter_concepts(name, contents['edges'], formatted_filters, end_sense_label)
 
         return filtered_concepts
 
 if __name__ == "__main__":
     c = ConceptnetClient()
 
-    filters = {(Relationship.IsA.value, True): (), (Relationship.IsA.value, False): ()}
+    filters = {(Relationship.HasSubevent.value, True): (), (Relationship.HasSubevent.value, False): ()}
     print(c.get_concept("dancing", filters))
