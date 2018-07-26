@@ -3,11 +3,24 @@ import requests, re
 import json
 import math
 from collections import defaultdict
+from enum import Enum
 
 EDGES = "edges"
 DEFAULT_IS_SOURCE = True
 DEFAULT_WEIGHT_THRESHOLD = -math.inf
 DEFAULT_MAX_ITEMS = math.inf
+
+class Relationship(Enum):
+    IsA = 'IsA'
+    HasA = 'HasA'
+    PartOf = 'PartOf'
+    UsedFor = 'UsedFor'
+    Causes = 'Causes'
+    HasSubevent = 'HasSubevent'
+    HasProperty = 'HasProperty'
+    MotivatedByGoal = 'MotivatedByGoal'
+    ReceivesAction = 'ReceivesAction'
+    CapableOf = 'CapableOf'
 
 class Edge:
     def __init__(self):
