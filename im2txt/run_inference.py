@@ -110,8 +110,8 @@ def main(_):
         buff += sentence +"["+ str(math.exp(caption.logprob)) + "]|"
         cnt += 1
 
-    if cnt % 100 is 1:
-      print("Captioned " + str(cnt) + " files.")
+        if cnt % 100 is 1:
+          print("cnt " + str(cnt) + ".")
 
       fop.write(buff+"\n")
     print("Completed captioning " + str(cnt) + " files.")

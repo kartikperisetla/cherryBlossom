@@ -1,5 +1,6 @@
 import os
 import pickle
+from detected_object import *
 
 
 class DetectedObjectUnpacker:

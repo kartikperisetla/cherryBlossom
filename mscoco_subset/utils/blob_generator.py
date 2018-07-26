@@ -115,7 +115,7 @@ class BlobGenerator:
     # method to get entity names and metadata for input image file name
     def _get_entities(self, fname, pickle_dir):
         _actual_filename = self._get_filename_from_path(fname)
-        _actual_filename = pickle_dir + "/" + _actual_filename.split(".")[0:1] + ".pkl"
+        _actual_filename = pickle_dir + "/" + _actual_filename.split(".")[0:1][0] + ".pkl"
         _, entity_names, entity_metadata = self.unpacker.unpack(_actual_filename)
         return entity_names, entity_metadata
 
@@ -136,24 +136,32 @@ class BlobGenerator:
                              "GPS GPSLongitude",
                              "Image Model"
                             ]
-
+                            
             img_tags = self._get_consumable_img_tags(self._get_image_tags(fname, img_tag_keys))
             base64_img = self._get_image_base64(fname)
 
             _actual_filename = self._get_filename_from_path(fname)
             _actual_filename = _actual_filename.split(".")[0:1]
+            _actual_filename = _actual_filename[0]
 
             op_filename = output_dir + "/" + _actual_filename + ".json"
 
-            self._create_blob(fname, pickle_dir,  base64_img, caption, "", op_filename, img_tags["location"], img_tags["datetime"], img_tags["device"])
+            _pickle_filename = pickle_dir + "/" + _actual_filename + ".pkl"
+
+            if os.path.exists(_pickle_filename):
+                print("file exists: '" + _pickle_filename +"'")
+                self._create_blob(fname, pickle_dir,  base64_img, caption, "", op_filename, img_tags["location"], img_tags["datetime"], img_tags["device"])
+            else:
+                print("doesn't exist : '" + _pickle_filename + "'")
             cnt+= 1
         print("Completely processed " + path)
 
 if __name__ == "__main__":
-    path = "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/mscoco_subset_gen_captions.tsv"
+    # path = "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/mscoco_subset_gen_captions.tsv"
+
+    path = "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/generated_captions_latest.tsv"
     pickle_dir = "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/pickle_files"
     output_dir = "/Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/blob_files"
-
 
     # /Users/kartik/pycook/tensorflow_models/models/research/im2txt/mscoco_subset/sampled_images/
 
