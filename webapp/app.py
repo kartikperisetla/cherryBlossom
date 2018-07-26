@@ -32,19 +32,32 @@ def index():
     return render_template("index.html")
 
 
-@app.route('/<int:ind>/')
-def image_view(ind=None):
-    if ind >= pager.count:
-        return render_template("404.html"), 404
-    else:
-        pager.current = ind
-        return render_template(
-            'imageview.html',
-            index=ind,
-            pager=pager,
-            data=table[ind],
-            searchQueryString="N/A")
+@app.route('/0', methods=['POST', 'GET'])
+def image_upload(ind=None):
+    print('Image upload request received')
+    if request.method == 'POST':
 
+        if 'file' not in request.files:
+            print('No file found')
+            return render_template("index.html")
+
+        file = request.files['file']
+
+        if file.filename == '':
+            print('No selected file')
+            return render_template("index.html")
+        if file and allowed_file(file.filename):
+            filename = file.filename
+            print(filename, type(file))
+            # with open('picture_out.png', 'wb') as f:
+                # f.write(file)
+            # send file to second endpoint
+    return render_template("index.html")
+
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/goto', methods=['POST', 'GET'])
 def goto():

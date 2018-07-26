@@ -55,7 +55,15 @@
             <!--<a href="#" class="btn btn-secondary my-2">Secondary action</a>-->
           </p>
         </div>
+        <br/><br/>
+        <div class="container">
+            <p class="lead text-muted">Upload an image
+            <form enctype="multipart/form-data" action="/0" method="post">
+            <input id="imageUploadBox" type="file" name="file" accept="*">
+            <input id="imageUploadSubmit" type="submit" value="submit"></form></p>
+        </div>
       </section>
+
 
       <div class="album py-5 bg-light">
         <div class="container">
@@ -82,7 +90,6 @@
     <script src="{{ url_for('static', filename='bootstrap.js')}}"></script>
     <script src="{{ url_for('static', filename='holder.js')}}"></script>
     <script type=text/javascript>
-    var imgData = null;
 
     $(function(){
         $('#goButton').on('click', function(){
@@ -109,6 +116,23 @@
             });
         });
     });
+/*
+    $(function(){
+        $('#imageUploadSubmit').on('click', function(){
+            console.log($('#imageUploadBox').val());
+            $.ajax({
+                url: '/0',
+                type: 'POST',
+                data: "none",
+                success: function(data) {
+                    console.log(data);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    });*/
     </script>
 
 <svg xmlns="http://www.w3.org/2000/svg" width="348" height="225" viewBox="0 0 348 225" preserveAspectRatio="none" style="display: none; visibility: hidden; position: absolute; top: -100%; left: -100%;"><defs><style type="text/css"></style></defs><text x="0" y="17" style="font-weight:bold;font-size:17pt;font-family:Arial, Helvetica, Open Sans, sans-serif">Thumbnail</text></svg></body></html>
