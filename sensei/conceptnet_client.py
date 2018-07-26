@@ -66,9 +66,6 @@ class Relation:
 class ConceptnetClient:
     def __init__(self):
         self.endpoint = "http://api.conceptnet.io/c/en/"
-        self.default_is_source = True
-        self.default_weight_threshold = 5
-        self.default_max_items = math.inf
 
     def _parse_json(self, response):
         raw = json.loads(response)
@@ -138,5 +135,5 @@ class ConceptnetClient:
 if __name__ == "__main__":
     c = ConceptnetClient()
 
-    filters = {('DefinedAs', True): (), ('DefinedAs', False): ()}
-    print(c.get_concept("playing", filters))
+    filters = {(Relationship.IsA.value, True): (), (Relationship.IsA.value, False): ()}
+    print(c.get_concept("dancing", filters))
